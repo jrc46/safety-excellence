@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="_layouts/15/clienttemplates.js"></script>
+    <script type="text/javascript" src="_layouts/15/clientforms.js"></script>
+    <script type="text/javascript" src="_layouts/15/clientpeoplepicker.js"></script>
+    <script type="text/javascript" src="_layouts/15/autofill.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        function divHide() {
+            var x = document.getElementById("dvPSC");
+
+            x.style.display = "none";
+
+        }
+
+        function divShow() {
+            var x = document.getElementById("dvPSC");
+
+            x.style.display = "block";
+
+        }
+
+    </script>
+
+    <style>
+        .form-control {
+            width: 400px;
+        }
+
+        #pageTitle {
+            display: none;
+        }
+
+        #sideNavBox {
+            display: none;
+        }
+
+        #SearchBox {
+            display: none;
+        }
+
+        #contentBox {
+            margin-left: 5px;
+        }
+
+        .DisableIntakeFields {
+            display: none;
+        }
+
+        .DisableDiv {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .required::after {
+            content: "*";
+            color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Safety Excellence</h2>
+        <p>You may input more than one item per month, but you will only get credit for one item per month. Also, every
+            member of your site must make an entry each month for the site’s STIP to be effective. Please support each
+            other in making this possible.</p>
+
+        <p>You must login with your own account to submit entries. Submissions from a shared login will not count. The
+            user info is tracked and submitted from your login.</p>
+
+
+        <div class="form-group">
+
+
+
+            <br>
+
+            <label for="Location">Select site:</label>
+            <select class="form-control" id="location" onchange="myFunction()">
+                <option>Select Site</option>
+
+                <option>Covington</option>
+                <option>Wickliffe</option>
+                <option>Waynesboro</option>
+                <option>Charleston</option>
+                <option>Deridder</option>
+                <option>Crossett</option>
+
+
+
+            </select>
+
+            <br>
+
+            <br>
+
+            <label for="Shift">Select Shift:</label>
+            <select class="form-control" id="Shift">
+                <option>Select Shift</option>
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+                <option>1st</option>
+            </select>
+            <br>
+            <br>
+            <label for="Question1">Select Activity:</label>
+            <select class="form-control" id="Question" onchange="myQuestionFunction()">
+                <option>Select Activity</option>
+            </select>
+            <br>
+            <br>
+            <label for="EGT"> Date Of Action:</label><br>
+            <input type="date" id="DN" class="JSdt" autocomplete="off"><br>
+            </br>
+            <br>
+            <div id="dvPSC">
+                <label for="lbPSCArea">Select PSC Area:</label>
+                <select class="form-control" id="PSCArea">
+                    <option>Select PSC Area</option>
+                </select>
+
+                <br>
+                <br>
+
+                <label for="lbPSCTopic">Select PSC Topic:</label>
+                <select class="form-control" id="PSCTopic">
+                    <option>Select PSC Topic</option>
+                </select>
+
+                <br>
+            </div>
+
+            <label for="Detailslbl">Details:</label>
+            <textarea id="Details" name="Details" cols="40" rows="5" class="form-control"></textarea>
+
+            <br>
+            <br>
+
+            <button type="button" class="btn btn-primary" onclick="SubmitRequestFormData()">Submit Form</button>
+
+            <script>
+                // Declaration of global variables
+
+                var MasterData;//Site data
+                var MasterDataShift;//Site Shift
+                var MasterDataQuestions;//get questions
+                var countP;
+
+                $(document).ready(function () {
+
+                    RedirectUrl = _spPageContextInfo.webAbsoluteUrl;
+                    getMasterData();
+                    getMasterDataShift();
+                    divHide();
+
+                });
+                //
+                function myFunction() {
+
+                    //$("#Question").clear();
+                    getMasterDataQuestion();
+                }
+
+                function PCSbinding() {
+                }
+                function myQuestionFunction() {
+
+                    var vSite1 = $('#location').val();
+                    var vQuestion1 = $('#Question').val();
+
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(field_1 eq 'PSC Area' and field_3 eq 1 and field_0 eq '" + vSite1 + "')",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            $('#PSCArea').find('option').remove();
+
+                            MasterDataQuestions = data.d.results;
+
+
+                            $.each(MasterDataQuestions, function (index, value) {
+                                $("#PSCArea").append('<option value="' + value.ID + '">' + value.Title + '</option>');
+
+
+                            });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(field_1 eq 'PSC Topic' and field_3 eq 1 and field_0 eq '" + vSite1 + "')",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            $('#PSCTopic').find('option').remove();
+
+                            MasterDataQuestions = data.d.results;
+
+
+                            $.each(MasterDataQuestions, function (index, value) {
+                                $("#PSCTopic").append('<option value="' + value.ID + '">' + value.Title + '</option>');
+
+
+                            });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+
+                    //Code to show divs
+                    countP = 0;
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(ID eq '" + vQuestion1 + "' and field_1 eq 'Question' and field_5 eq 1 and field_0 eq '" + vSite1 + "')",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            MasterDataQuestions = data.d.results;
+                            $.each(MasterDataQuestions, function (index, value) {
+                                countP = countP + 1
+                            });
+
+                            if (countP > 0) {
+                                divShow();
+                                countP = 0;
+                            }
+                            else {
+                                $('#PSCTopic').find('option').remove();
+                                $('#PSCArea').find('option').remove();
+                                divHide();
+                            }
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                }
+
+                //MC Nomula Method to get Question values from
+                function getMasterDataQuestion() {
+                    divHide();
+                    var vSite = $('#location').val();
+
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(field_1 eq 'Question' and field_3 eq 1 and field_0 eq '" + vSite + "')",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            $('#Question').find('option').remove();
+                            $("#Question").prepend('<option selected="selected" value=" "> Select Activity</option>');
+                            MasterDataQuestions = data.d.results;
+                            $.each(MasterDataQuestions, function (index, value) {
+                                $("#Question").append('<option value="' + value.ID + '">' + value.Title + '</option>');
+                            });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+
+                }
+
+                //MC Nomula Method to get site/location values from
+                function getMasterData() {
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Admin Site')/items?$select=*",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            MasterData = data.d.results;
+                            $.each(MasterData, function (index, value) {
+                                // $("#location").append('<option value="' + value.Locations + '">' + value.Title +'</option>');
+                                //$("#Shift").append('<option value="' + value.Shift + '">' + value.Shift +'</option>');
+                            });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                }
+
+                //MC Nomula Method to get Shift values from
+                function getMasterDataShift() {
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Admin Site')/items?$select=*",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            MasterDataShift = data.d.results;
+                            $.each(MasterDataShift, function (index, value) {
+                                // $("#Shift").append('<option value="' + value.Shift + '">' + value.Shift +'</option>');
+                            });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                }
+
+                //MC Nomula function to submit form data to sharepoint list
+                function SubmitRequestFormData() {
+
+                    var dtOfAction = new Date($('#DN').val());
+                    dtOfAction.setDate(dtOfAction.getDate());
+
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Responses')/items",
+                        method: "POST",
+                        async: false,
+                        data: JSON.stringify({
+                            '__metadata':
+                            {
+                                "type": "SP.Data.Safety_x0020_Excellence_x0020_ResponsesListItem"
+                            },
+                            Site: $('#location').val(),
+                            DateofAction: $('#DN').val(),
+                            Shift: $('#Shift').val(),
+                            QuestionID: $('#Question').val(),
+                            Details: $('#Details').val(),
+                            PSCAreaID: $('#PSCArea').val(),
+                            PSCTopicID: $('#PSCTopic').val()
+                        }),
+                        headers: {
+                            "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                            "content-type": "application/json;odata=verbose",
+                            "accept": "application/json;odata=verbose"
+                        },
+                        success: function (data) {
+                            alert("Submitted Successfully!!");
+                            $(location).attr("href", "https://ingevity.sharepoint.com/Safety%20Excellence/SitePages/WP.aspx");
+
+                        },
+                        error: function (error) {
+                            alert("Error has occured");
+                            console.log(JSON.stringify(error));
+                        }
+                    });
+                }
+            </script>
+
+</html>
