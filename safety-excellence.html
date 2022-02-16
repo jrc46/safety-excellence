@@ -152,6 +152,22 @@
             <br>
 
             <button type="button" class="btn btn-primary" onclick="SubmitRequestFormData()">Submit Form</button>
+            
+            <button type="button mt-1" class="btn btn-secondary" onclick="getMyResponses()">Show Table of Responses</button>
+
+            <br>
+            <div class="hidden" id="myResponses">
+                <h3>My Responses</h3>
+                <table class="table table-hover" id="activityTable">
+                    <thead>
+                        <th>Date of Action</th>
+                        <th>Activity</th>
+                        <th>Details</th>
+                    </thead>
+                    <tbody id="activityTableBody">
+                    </tbody>
+                </table>
+            </div>
 
             <script>
                 // Declaration of global variables
@@ -324,6 +340,57 @@
                             $.each(MasterDataShift, function (index, value) {
                                 // $("#Shift").append('<option value="' + value.Shift + '">' + value.Shift +'</option>');
                             });
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    });
+                }
+
+                function getMyResponses() {
+                    let d = {}
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(field_1 eq 'Question')",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            data.d.results.map(v => d[v.ID] = v.Title)
+                            console.log("D:", d);
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error));
+                        }
+                    })
+
+                    $.ajax({
+                        url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Responses')/items?$select=*",
+                        type: "GET",
+                        async: false,
+                        headers: {
+                            "accept": "application / json;odata = verbose",
+                        },
+                        success: function (data) {
+                            MyReponses = data.d.results;
+                            let table = $('#activityTable')
+                            let tbody = table.find('tbody')
+                            let row, cell1, cell2, cell3;
+                            MyReponses.map(v => {
+                                // Fill out table of responses
+                                console.log(v.DateofAction, d[v.QuestionID]);
+                                tbody.append($('<tr>')
+                                    .append($('<td>')
+                                        .text(v.DateofAction.slice(0, 10))
+                                    ).append($('<td>')
+                                        .text(d[v.QuestionID])
+                                    ).append($('<td>')
+                                        .text(v.Details)
+                                    )
+                                )
+                            })
+                            $('#myResponses').removeClass('hidden')
                         },
                         error: function (error) {
                             alert(JSON.stringify(error));
