@@ -153,7 +153,7 @@
 
             <button type="button" class="btn btn-primary" onclick="SubmitRequestFormData()">Submit Form</button>
             
-            <button type="button mt-1" class="btn btn-secondary" onclick="getMyResponses()">Show Table of Responses</button>
+            <button type="button mt-1" class="btn btn-secondary" onclick="getMyResponses(event);">Show Table of Responses</button>
 
             <br>
             <div class="hidden" id="myResponses">
@@ -347,7 +347,8 @@
                     });
                 }
 
-                function getMyResponses() {
+                function getMyResponses(e) {
+                    e.preventDefault();
                     let d = {}
                     $.ajax({
                         url: _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/GetByTitle('Safety Excellence Admin')/items?$select=Title,ID,field_1&$filter=(field_1 eq 'Question')",
