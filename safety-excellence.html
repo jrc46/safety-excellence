@@ -81,6 +81,8 @@
         <p>You must login with your own account to submit entries. Submissions from a shared login will not count. The
             user info is tracked and submitted from your login.</p>
 
+        <p class="alert alert-info">You are currently logged in as: <strong><span id="username"></span></strong>. If this is not you, please login under your username.</p>
+
 
         <div class="form-group">
 
@@ -183,6 +185,7 @@
                     getMasterData();
                     getMasterDataShift();
                     divHide();
+                    $('#username').text(_spPageContextInfo.userEmail)
 
                 });
                 //
