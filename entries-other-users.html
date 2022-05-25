@@ -82,17 +82,20 @@
     <body>
         <div class="container">
             <h2>Safety Excellence</h2>
+
+            <p class="alert alert-danger">
+                If you are not a Safety Lead do not use this page. Please use
+                <a
+                    href="https://ingevity.sharepoint.com/Safety%20Excellence/SitePages/WP.aspx"
+                    >this entry form.</a
+                >
+            </p>
+
             <p>
                 You may input more than one item per month, but you will only
                 get credit for one item per month. Also, every member of your
                 site must make an entry each month for the site’s STIP to be
                 effective. Please support each other in making this possible.
-            </p>
-
-            <p>
-                You must login with your own account to submit entries.
-                Submissions from a shared login will not count. The user info is
-                tracked and submitted from your login.
             </p>
 
             <p class="alert alert-info">
@@ -102,6 +105,14 @@
             </p>
 
             <form>
+                <div class="form-group">
+                    <label for="SubmittedBy">User Email:</label>
+                    <input type="text" id="SubmittedBy" class="form-control" />
+                    <small id="UserHelp" class="form-text text-muted"
+                        >This is to submit the data by another username. Do not
+                        use this entry if you are not a Safety Lead. Please use the @ingevity.com email address here.</small
+                    >
+                </div>
                 <div class="form-group">
                     <label for="Location">Select site:</label>
                     <select
@@ -494,6 +505,7 @@
                     Details: $("#Details").val(),
                     PSCAreaID: $("#PSCArea").val(),
                     PSCTopicID: $("#PSCTopic").val(),
+                    SubmittedBy: $("#SubmittedBy").val(),
                 }),
                 headers: {
                     "X-RequestDigest": $("#__REQUESTDIGEST").val(),
@@ -504,7 +516,7 @@
                     alert("Submitted Successfully!!");
                     $(location).attr(
                         "href",
-                        "https://ingevity.sharepoint.com/Safety%20Excellence/SitePages/WP.aspx"
+                        "https://ingevity.sharepoint.com/Safety%20Excellence/SitePages/entries-for-others.aspx"
                     );
                 },
                 error: function (error) {
