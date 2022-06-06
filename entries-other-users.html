@@ -106,12 +106,12 @@
 
             <form>
                 <div class="form-group">
-                    <label for="SubmittedBy">User Email:</label>
-                    <input type="text" id="SubmittedBy" class="form-control" />
-                    <small id="UserHelp" class="form-text text-muted"
-                        >This is to submit the data by another username. Do not
-                        use this entry if you are not a Safety Lead. Please use the @ingevity.com email address here.</small
-                    >
+                    <label for="SubmittedBy">User:</label>
+                    <div id="_UserName" class="form-control"></div>
+                    <small class="form-text text-muted">
+                        This is to submit data for users that are not yourself.
+                        Do not use this entry if you are not a Safety Lead.
+                    </small>
                 </div>
                 <div class="form-group">
                     <label for="Location">Select site:</label>
@@ -233,6 +233,7 @@
             getMasterData();
             getMasterDataShift();
             divHide();
+            initializePeoplePicker("_UserName");
             $("#username").text(_spPageContextInfo.userEmail);
         });
         //
@@ -487,6 +488,7 @@
         function SubmitRequestFormData() {
             var dtOfAction = new Date($("#DN").val());
             dtOfAction.setDate(dtOfAction.getDate());
+            ensureUser();
 
             $.ajax({
                 url:
@@ -505,7 +507,7 @@
                     Details: $("#Details").val(),
                     PSCAreaID: $("#PSCArea").val(),
                     PSCTopicID: $("#PSCTopic").val(),
-                    SubmittedBy: $("#SubmittedBy").val(),
+                    SubmittedByUserId: UserId, // submits person to SubmittedByUser field via ID
                 }),
                 headers: {
                     "X-RequestDigest": $("#__REQUESTDIGEST").val(),
@@ -524,6 +526,56 @@
                     console.log(JSON.stringify(error));
                 },
             });
+        }
+
+        function initializePeoplePicker(peoplePickerElementId) {
+            var schema = {};
+            schema["PrincipalAccountType"] = "User,DL,SecGroup,SPGroup";
+            schema["SearchPrincipalSource"] = 15;
+            schema["ResolvePrincipalSource"] = 15;
+            schema["AllowMultipleValues"] = true;
+            schema["MaximumEntitySuggestions"] = 50;
+            // schema["Width"] = "280px";
+            this.SPClientPeoplePicker_InitStandaloneControlWrapper(
+                peoplePickerElementId,
+                null,
+                schema
+            );
+        }
+
+        function ensureUser() {
+            var peoplePickerTopDivId = $("#_UserName")
+                .children()
+                .children()
+                .attr("id");
+            var peoplePicker =
+                this.SPClientPeoplePicker.SPClientPeoplePickerDict[
+                    peoplePickerTopDivId
+                ];
+            var users = peoplePicker.GetAllUserInfo();
+            var arryuser = users[0];
+            if (arryuser) {
+                var payload = { logonName: arryuser.Key };
+                $.ajax({
+                    url:
+                        _spPageContextInfo.webAbsoluteUrl +
+                        "/_api/web/ensureuser",
+                    type: "POST",
+                    async: false,
+                    contentType: "application/json;odata=verbose",
+                    data: JSON.stringify(payload),
+                    headers: {
+                        "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                        accept: "application/json;odata=verbose",
+                    },
+                    success: function (data, status, xhr) {
+                        UserId = data.d.Id;
+                    },
+                    error: function (xhr, status, error) {},
+                });
+            } else {
+                UserId = 0;
+            }
         }
     </script>
 </html>
