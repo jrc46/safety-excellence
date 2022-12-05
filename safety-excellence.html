@@ -121,7 +121,7 @@
                 </div>
 
                 <div class="form-group" id="dvArea">
-                    <label for="Area">Area:</label>
+                    <label for="Area">What area do you report to?</label>
                     <select class="form-control" id="Area">
                         <option>Select Area</option>
                     </select>
@@ -230,6 +230,7 @@
             getMasterDataShift();
             divHide("dvPSC");
             divHide("dvArea");
+            $("#dvArea").find("option").remove();
             $("#username").text(_spPageContextInfo.userEmail);
         });
         //
