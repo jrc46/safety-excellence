@@ -258,7 +258,7 @@
                 success: function (data) {
                     $("#PSCArea").find("option").remove();
 
-                    MasterDataQuestions = data.d.results;
+                    MasterDataQuestions = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
 
                     $.each(MasterDataQuestions, function (index, value) {
                         $("#PSCArea").append(
@@ -288,7 +288,7 @@
                 success: function (data) {
                     $("#PSCTopic").find("option").remove();
 
-                    MasterDataQuestions = data.d.results;
+                    MasterDataQuestions = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
 
                     $.each(MasterDataQuestions, function (index, value) {
                         $("#PSCTopic").append(
@@ -321,7 +321,7 @@
                     accept: "application / json;odata = verbose",
                 },
                 success: function (data) {
-                    MasterDataQuestions = data.d.results;
+                    MasterDataQuestions = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
                     $.each(MasterDataQuestions, function (index, value) {
                         countP = countP + 1;
                     });
@@ -400,7 +400,7 @@
                     $("#Question").prepend(
                         '<option selected="selected" value=" "> Select Activity</option>'
                     );
-                    MasterDataQuestions = data.d.results;
+                    MasterDataQuestions = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
                     $.each(MasterDataQuestions, function (index, value) {
                         $("#Question").append(
                             '<option value="' +
@@ -429,7 +429,7 @@
                     accept: "application / json;odata = verbose",
                 },
                 success: function (data) {
-                    MasterData = data.d.results;
+                    MasterData = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
                     $.each(MasterData, function (index, value) {
                         // $("#location").append('<option value="' + value.Locations + '">' + value.Title +'</option>');
                         //$("#Shift").append('<option value="' + value.Shift + '">' + value.Shift +'</option>');
@@ -453,7 +453,7 @@
                     accept: "application / json;odata = verbose",
                 },
                 success: function (data) {
-                    MasterDataShift = data.d.results;
+                    MasterDataShift = data.d.results.sort((a,b) => a.Title > b.Title ? 1 : -1);
                     $.each(MasterDataShift, function (index, value) {
                         // $("#Shift").append('<option value="' + value.Shift + '">' + value.Shift +'</option>');
                     });
